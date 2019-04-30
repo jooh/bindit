@@ -4,8 +4,8 @@ python:
 - 3.7
 - 3.6
 install:
-  pip install -U tox-travis
-  python setup.py -q install
+  - pip install -U tox-travis
+  - python setup.py -q install
 script: tox
 deploy:
   provider: pypi
