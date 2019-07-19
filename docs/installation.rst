@@ -4,48 +4,46 @@
 Installation
 ============
 
+Standalone binaries
+-------------------
+TODO
 
-Stable release
---------------
+We provide self-contained binaries for major systems (Linux, Mac, Windows) under our
+Github releases. This is the preferred route for most users since there is no risk of
+interactions with your current Python environment.
 
-To install bindit, run this command in your terminal:
+Stable python package
+---------------------
+
+If you prefer to install bindit as a python package, you can install the current release
+with `pip`:
 
 .. code-block:: console
 
-    $ pip install bindit
-
-This is the preferred method to install bindit, as it will always install the most recent stable release.
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
+    pip install bindit
 
 .. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
+Development version
+-------------------
 
-From sources
-------------
-
-The sources for bindit can be downloaded from the `Github repo`_.
-
-You can either clone the public repository:
+The bleeding edge version of bindit can be pip installed from the `Github repo` like so:
 
 .. code-block:: console
 
-    $ git clone git://github.com/jooh/bindit
+   pip install git+git://github.com/jooh/bindit.git
 
-Or download the `tarball`_:
+
+Editable version
+----------------
+
+For contributors, you can install an editable version of bindit by first cloning the
+repository, then pip installing:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/jooh/bindit/tarball/master
-
-Once you have a copy of the source, you can install it with:
-
-.. code-block:: console
-
-    $ python setup.py install
-
+    git clone git://github.com/jooh/bindit
+    cd bindit
+    pip install -e .
 
 .. _Github repo: https://github.com/jooh/bindit
-.. _tarball: https://github.com/jooh/bindit/tarball/master

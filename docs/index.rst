@@ -1,14 +1,29 @@
-Welcome to bindit's documentation!
-======================================
+bindit - painless bind mounts for containers
+============================================
+
+Bindit is a docker and (soon) singularity wrapper that makes it easy to containerize
+applications with file read/write requirements. 
+
+Gnarly commands like
+
+.. code-block:: console
+
+   docker here
+
+Become a lot more like
+
+.. code-block:: console
+
+   bind it here
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   readme
    installation
    usage
-   modules
+   Module Reference <modules>
    contributing
    authors
    history
