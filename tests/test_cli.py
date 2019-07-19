@@ -13,6 +13,3 @@ def test_install():
     result = runner.invoke(bindit.cli.main)
     assert result.exit_code == 0
     assert "bindit is a wrapper for container runners" in result.output
-    help_result = runner.invoke(bindit.cli.main, ["--help"])
-    assert help_result.exit_code == 0
-    assert "--help               Show this message and exit." in help_result.output

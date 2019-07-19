@@ -10,38 +10,60 @@ import bindit.docker
 from click.testing import CliRunner
 import subprocess
 
-IMAGE = "nginx:latest"
+IMAGE = "alpine:latest"
+IMAGE_SHELL_PREFIX = ["/bin/sh", "-c"]
 TEMPFILE_PREFIX = f"bindit_{__name__}_"
 SOURCE_ABSTRACT = pathlib.Path("$(pwd)/target").resolve()
 DEST_ABSTRACT = pathlib.PosixPath("/app")
 
 
 class DockerRun(object):
-    """bindit docker API for detached container runs. Main use is as a
+    """bindit docker API for detached container runs. The main use is as a
     test context manager."""
 
-    def __init__(self, *runarg, name="bindit-test"):
-        self.runarg = runarg
+    def __init__(
+        self,
+        *image_arg,
+        runner_arg=[],
+        name="bindit-test",
+        image=IMAGE,
+        shell_prefix=IMAGE_SHELL_PREFIX,
+    ):
+        # so we need to take the args, add a cat to ensure the container stays up
+        if image_arg:
+            self.image_arg = bindit.shell.join_and_quote(list(image_arg) + ["&", "cat"])
+        else:
+            self.image_arg = "cat"
+        self.shell_prefix = shell_prefix
+        self.image = image
         self.name = name
-        assert not "--name" in runarg, "set name by kwarg"
+        # input validation
+        assert not "--name" in runner_arg, "set name by kwarg"
         assert (
-            not "--detach" in runarg and not "-d" in runarg
+            not "--detach" in runner_arg and not "-d" in runner_arg
         ), "detach arg is redundant"
+        self.runner_arg = runner_arg
         if self.is_running():
             print(f"cleaning up orphan container image: {self.name}")
             self.cleanup()
 
     def __enter__(self):
-        ret = bindit.shell.run(
+        # np, image_arg run as a single quoted str to support more complex expressions than
+        # standard docker run img cmd syntax allows.
+        self.ret = bindit.shell.run(
             "bindit",
             "--loglevel",
             "DEBUG",
             "docker",
             "run",
             "--detach",
+            "-it",
             "--name",
             self.name,
-            *self.runarg,
+            *self.runner_arg,
+            self.image,
+            *self.shell_prefix,
+            self.image_arg,
         )
         return self
 
@@ -89,7 +111,6 @@ class DockerRun(object):
 
     def has_file(self, destpath):
         """return true if destpath is present."""
-        destpath = pathlib.Path(destpath)
         ret = self.exec("ls", "-1", destpath.parent)
         files = ret.stdout.split("\n")
         return destpath.name in files
@@ -127,6 +148,20 @@ def test_parse_bind_volume():
     assert list(mapping.values())[0] == DEST_ABSTRACT
 
 
+def test_no_nothing():
+    """test that bindit stays out of the way when there's nothing to do."""
+    with DockerRun() as container:
+        assert container.is_running()
+        assert not container.get_mounts()
+
+
+def test_ignore():
+    """test that bindit does not attempt to bind default binary directory."""
+    with DockerRun("ls", "/usr/bin") as container:
+        assert container.is_running()
+        assert not container.get_mounts()
+
+
 def test_bind():
     """test standard bindit mapping - bind referenced dir, no other manual binds."""
     with tempfile.TemporaryDirectory(prefix=TEMPFILE_PREFIX) as sourcedir:
@@ -134,7 +169,7 @@ def test_bind():
         sourcefile = pathlib.Path(
             tempfile.mkstemp(dir=sourcedir, prefix=TEMPFILE_PREFIX)[1]
         )
-        with DockerRun(IMAGE, "ls", sourcefile) as container:
+        with DockerRun("ls", sourcefile) as container:
             assert container.is_running()
             # check that sourcedir has been mounted
             mounts = container.get_mounts()
@@ -143,8 +178,7 @@ def test_bind():
             assert pathlib.Path("/bindit") in mounts[sourcedir_resolved].parents
 
 
-def test_manual_bind_mount():
-    """test handling of a user-defined bind (specified in mount syntax)."""
+def manual_bind_runner(binder):
     with tempfile.TemporaryDirectory(prefix=TEMPFILE_PREFIX) as sourcedir:
         sourcefile = pathlib.Path(
             tempfile.mkstemp(dir=sourcedir, prefix=TEMPFILE_PREFIX)[1]
@@ -154,10 +188,9 @@ def test_manual_bind_mount():
         # expected location
         destfile = manualdest / sourcefile.name
         with DockerRun(
-            *bindit.docker.mount_bind_args(sourcedir, manualdest),
-            IMAGE,
             "ls",
             sourcefile,
+            runner_arg=list(binder(sourcedir, manualdest)),
         ) as container:
             assert container.is_running()
             mounts = container.get_mounts()
@@ -168,33 +201,15 @@ def test_manual_bind_mount():
             assert mounts[sourcedir_resolved] == manualdest
             # and that we have no other mounts
             assert list(mounts.keys()) == [sourcedir_resolved]
+
+def test_manual_bind_mount():
+    """test handling of a user-defined bind (specified in mount syntax)."""
+    manual_bind_runner(bindit.docker.mount_bind_args)
 
 
 def test_manual_bind_volume():
     """test handling of a user-defined bind (specified in volume syntax)."""
-    with tempfile.TemporaryDirectory(prefix=TEMPFILE_PREFIX) as sourcedir:
-        sourcefile = pathlib.Path(
-            tempfile.mkstemp(dir=sourcedir, prefix=TEMPFILE_PREFIX)[1]
-        )
-        sourcedir_resolved = pathlib.Path(sourcedir).resolve()
-        manualdest = pathlib.PosixPath("/manualbind")
-        # expected location
-        destfile = manualdest / sourcefile.name
-        with DockerRun(
-            *bindit.docker.volume_bind_args(sourcedir, manualdest),
-            IMAGE,
-            "ls",
-            sourcefile,
-        ) as container:
-            assert container.is_running()
-            mounts = container.get_mounts()
-            # verify that the source is there
-            assert sourcedir_resolved in mounts
-            # and that the destination is the manual destination and not some /bindit
-            # stuff
-            assert mounts[sourcedir_resolved] == manualdest
-            # and that we have no other mounts
-            assert list(mounts.keys()) == [sourcedir_resolved]
+    manual_bind_runner(bindit.docker.volume_bind_args)
 
 
 def test_no_image_args():
@@ -204,11 +219,10 @@ def test_no_image_args():
             tempfile.mkstemp(dir=sourcedir, prefix=TEMPFILE_PREFIX)[1]
         )
         sourcedir_resolved = pathlib.Path(sourcedir).resolve()
-        manualdest = pathlib.PosixPath("/manualbind")
-        # expected location
-        destfile = manualdest / sourcefile.name
+        destdir = pathlib.PosixPath("/manualbind")
+        destfile = destdir / sourcefile.name
         with DockerRun(
-            *bindit.docker.volume_bind_args(sourcedir, manualdest), IMAGE
+            runner_arg=list(bindit.docker.volume_bind_args(sourcedir, destdir))
         ) as container:
             assert container.is_running()
             mounts = container.get_mounts()
@@ -216,13 +230,23 @@ def test_no_image_args():
             assert sourcedir_resolved in mounts
             # and that the destination is the manual destination and not some /bindit
             # stuff
-            assert mounts[sourcedir_resolved] == manualdest
+            assert mounts[sourcedir_resolved] == destdir
             # and that we have no other mounts
             assert list(mounts.keys()) == [sourcedir_resolved]
+            assert container.has_file(destfile)
 
 
-def test_no_nothing():
-    """test that bindit stays out of the way when there's nothing to do."""
-    with DockerRun(IMAGE) as container:
-        assert container.is_running()
-        assert not container.get_mounts()
+def test_bind_folder():
+    """test bindit mapping of folder - bind referenced dir, without any superfluous
+    nesting."""
+    with tempfile.TemporaryDirectory(prefix=TEMPFILE_PREFIX) as sourcedir:
+        sourcedir_resolved = pathlib.Path(sourcedir).resolve()
+        destdir_expected = pathlib.PosixPath(
+            "/bindit"
+        ) / sourcedir_resolved.relative_to(sourcedir_resolved.anchor)
+        with DockerRun("ls", sourcedir) as container:
+            assert container.is_running()
+            # check that sourcedir has been mounted
+            mounts = container.get_mounts()
+            assert sourcedir_resolved in mounts
+            assert pathlib.PosixPath(mounts[sourcedir_resolved]) == destdir_expected

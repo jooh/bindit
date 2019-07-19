@@ -2,9 +2,10 @@
 import sys
 import pathlib
 import itertools
+import shlex
+import click
 import bindit
 import bindit.shell
-import click
 
 """docker-specific interface for bindit."""
 
@@ -29,7 +30,7 @@ def infer_docker_cli():
             indend = thisrow[indstart:].index(" ") + indstart
             newflag = thisrow[indstart:indend]
             # empty if it's a boolean flag, type if it's a key-value pair
-            value = thisrow[indend + 1:].split("  ")[0]
+            value = thisrow[indend + 1 :].split("  ")[0]
             bindit.LOGGER.debug(f"new flag {newflag} {value}")
             valid_args[newflag] = value
             # there might also be a short-hand version, which is always single-hyphen,
@@ -74,7 +75,9 @@ def parse_bind_mount(bind_arg):
 
 def parse_bind_volume(bind_arg):
     # can be up to three, but we only want the first two
-    src, dst = bind_arg.split(":")[:2]
+    bind_arg = bind_arg.split(":")
+    src, dst = bind_arg[:2]
+    assert len(bind_arg) < 4, "unexpected number of bind_arg"
     return {pathlib.Path(src).resolve(): pathlib.PosixPath(dst)}
 
 
@@ -92,28 +95,27 @@ ARGS, LETTERS = infer_docker_cli()
 def run(run_args):
     """click.command that casts run_args to lists and handles parsing of the arguments,
     adding volume binds as necessary and running the container (if not DRY_RUN)."""
-    # detect arguments, rebase image args
-    container_args, container_name, image_args, new_binds = bindit.parse_container_args(
-        list(run_args), bind_parser=BIND_PARSER, valid_args=ARGS, valid_letters=LETTERS
+    args_iter = bindit.arg_pairs(run_args)
+    # handle arguments to the container runner
+    container_args, manual_binds, container_name = bindit.parse_container_args(
+        args_iter, bind_parser=BIND_PARSER, valid_args=ARGS, valid_letters=LETTERS
     )
+    # handle arguments to the image, including any rebasing of paths
+    image_args, new_binds = bindit.parse_image_args(args_iter, manual_binds)
 
     # construct new binds in docker format
-    # concatenated list of tuples - surprisingly ugly for python but efficient
-    bind_args = list(
-        itertools.chain.from_iterable(
-            (volume_bind_args(source, dest) for source, dest in new_binds.items())
-        )
-    )
+    bind_args = list(bindit.bind_dict_to_arg(volume_bind_args, new_binds))
 
     # generate the final command by inserting the new binds
     final_command = (
         ["docker", "run"] + container_args + bind_args + [container_name] + image_args
     )
-    # need list comprehension here because join chokes on pathlib.Path
-    sys.stdout.write(f"""{" ".join([str(cmd) for cmd in final_command])}\n""")
 
+    # write out to stdout with appropriate escapes
+    sys.stdout.write(bindit.shell.join_and_quote(final_command) + "\n")
     if bindit.DRY_RUN:
         return 0
+
     # run the beast
     ret = bindit.shell.run(*final_command, interactive=True)
     return ret.returncode

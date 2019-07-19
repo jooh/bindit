@@ -1,9 +1,7 @@
 """shell interface routines."""
 import sys
 import subprocess
-import logging
-
-LOGGER = logging.getLogger("bindit")
+import shlex
 
 
 def run(*arg, interactive=False):
@@ -26,3 +24,10 @@ def run(*arg, interactive=False):
     except BaseException:
         raise
     return ret
+
+
+def join_and_quote(arg_list):
+    """return a string of appropriately quoted and escaped arguments from list."""
+    # need to cast to str because join chokes on pathlib.Path as of python 3.6
+    # and shlex to get quotes on args with spaces (and escape any nested quotes)
+    return " ".join([shlex.quote(str(this_arg)) for this_arg in arg_list])

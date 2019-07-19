@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import pathlib
 import click
 import bindit
 import bindit.docker
@@ -22,8 +23,16 @@ def singularity(singularity_args):
     help="Return formatted shell command without invoking container runner",
 )
 @click.option("-a", "--absonly", is_flag=True, help="Only rebase absolute paths.")
+@click.option(
+    "-i",
+    "--ignorepath",
+    multiple=True,
+    type=click.Path(exists=True),
+    help="path(s) on the host to ignore when detecting new bind mounts. Typical \
+        linux binary locations (/usr/bin etc) are included on this list by default.",
+)
 @click.group()
-def main(loglevel, dryrun, absonly):
+def main(loglevel, dryrun, absonly, ignorepath):
     """bindit is a wrapper for container runners that makes it easy to handle file input
     and output for containerised command-line applications. It works by detecting file
     paths in the container image arguments, and rebasing these as necessary onto new
@@ -31,6 +40,7 @@ def main(loglevel, dryrun, absonly):
     bindit.LOGGER.setLevel(loglevel)
     bindit.DRY_RUN = dryrun
     bindit.ABS_ONLY = absonly
+    bindit.IGNORE_PATH += [pathlib.Path(p) for p in ignorepath]
     return
 
 
