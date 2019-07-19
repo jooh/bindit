@@ -6,17 +6,16 @@ Installation
 
 Standalone binaries
 -------------------
-TODO
 
-We provide self-contained binaries for major systems (Linux, Mac, Windows) under our
-Github releases. This is the preferred route for most users since there is no risk of
-interactions with your current Python environment.
+We provide self-contained binaries for major systems (Linux, Mac, soon Windows?) for
+each of our `Github releases`_. This is the preferred route for most users since there
+is no risk of interactions with your current Python environment.
 
 Stable python package
 ---------------------
 
 If you prefer to install bindit as a python package, you can install the current release
-with `pip`:
+with `pip`_:
 
 .. code-block:: console
 
@@ -27,7 +26,7 @@ with `pip`:
 Development version
 -------------------
 
-The bleeding edge version of bindit can be pip installed from the `Github repo` like so:
+The bleeding edge version of bindit can be pip installed from the `Github repo`_ like so:
 
 .. code-block:: console
 
@@ -47,3 +46,4 @@ repository, then pip installing:
     pip install -e .
 
 .. _Github repo: https://github.com/jooh/bindit
+.. _Github releases: https://github.com/jooh/bindit/releases

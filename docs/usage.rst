@@ -2,7 +2,7 @@
 Usage
 =====
 
-Bindit is a command-line application. The basic usage is to prepend `bindit` to the
+Bindit is a command-line application. The basic usage is to prepend ``bindit`` to the
 container runner command you would ordinarily use. For example, if you wanted to use a
 docker container to list the contents of your current home directory you might do
 something like this on a unix-based system (Linux, OS X):
@@ -17,7 +17,7 @@ has access to your host file system, so this works:
 
 .. code-block:: console
 
-    bindit docker run alpine:latest ls "$HOME"
+    bindit docker run alpine:latest ls "$HOME"/data
 
 Bindit mounts are mapped to a new /bindit root inside the container to avoid clobbering
 directories that might be necessary for the container to run (in particular, messing
@@ -42,10 +42,8 @@ is easy. Here is a minimal example of an ImageMagick interface:
    #!/bin/bash
    bindit docker run pokidov/imagemagick "$@"
 
-Any specified input and output files will be. Oh wait. Do we require that the path
-exists? We sure do. Bollocks. Ok, so for sure we cannot support mkdir -p style creation
-of arbitrary directories. I guess what we *can* do is support cases where the directory
-exists even if the file currently does not.
+Any entered input and output paths will be re-mapped as necessary before the container
+is run.
 
 Default and optional behavior
 -----------------------------
@@ -56,7 +54,7 @@ Bindit's default behavior can be controlled with the following flags:
 ~~~~~~~~~~~~~
 
 Only auto-bind absolute paths. Useful if you call bindit from a folder that has
-sub-folders which shadow binaries inside the container (`python` is a frequent offender
+sub-folders which shadow binaries inside the container (``python`` is a frequent offender
 for me).
 
 -d, --dryrun
@@ -65,6 +63,19 @@ for me).
 Return a formatted shell command without invoking container runner. Useful for
 debugging, and when you want to defer running the container to a different context (for
 instance, HPC job submission).
+
+-i, --ignorepath
+~~~~~~~~~~~~~~~~
+
+bindit won't attempt to bind any paths that is a sub-directory of the specified path(s).
+You can use this flag multiple times. The result is appended to a list of default unix
+root folders (see ``bindit.IGNORE_PATH``).
+
+-l, --loglevel
+~~~~~~~~~~~~~~
+
+Set the verbosity of log messages printed to the shell standard out. Default level is
+INFO, try DEBUG for more detail.
 
 Combining user-defined and automatic binds
 ------------------------------------------
@@ -131,5 +142,5 @@ Handling implicit output paths
 Bindit can only recognize paths that are explicitly provided when the container runner
 is called. If you are using bindit to wrap an application that generates new files
 without any API control over where they go (for instance by writing to cwd as in the
-default `gzip -d` behavior), this won't work because bindit won't be able to anticipate
-this output.
+default ``gzip -d`` behavior), this won't work because bindit won't be able to
+anticipate this output.
