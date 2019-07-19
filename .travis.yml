@@ -4,20 +4,18 @@ python:
 - 3.7
 - 3.6
 install:
-  - pip install -U tox-travis
-  - python setup.py -q install
+- pip install -U tox-travis
+- python setup.py -q install
 script: tox
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   user: jcarlin
   password:
-    secure: RrQWrd9EkGFJybW2IS9IrBQdlUMmbdzWQkgULJsw6TTXq7iq53q187OPeAtB13KltcV4HLIkcewmMs1H5/iM+IzV/w68FJ9gxeGCGyhHpfrXNErG9LchFQjA93bDOOusfVoU4xD/PnFYbAt5RXBQ0+GyqzPVImJbACcv6+NO/D4Hs4JNpeKKFR2k2TzA8aMJEujx4qfSiFqhq7tqvswlbanGjj8eah9YNYUVDpRr1sRgE3hGGisNgRxxBYceRpF5RsJ8gXj4VJLuSWILKUz99IgazrfMRaCQ7rVh+nE4anOAYygnwo9ByFhP8P5/C+jPqGr+whZG0U1LLgs4Nov4hWEMGy9IASk2Xgd3Yibc/hUWiOyjQD2L5wIPgzcah+C7Pv48So0qos4OwsSSCcoemz5KDxVg0VbYc+9hkyD+KuWIbzlWWjyTCAAPb9AqM1qR9AM2BaLe4w/Ce0UshOlMT/LMOuNBaDK8VzY8M+k9kSusokbajxGmbspK8lf75CXxZKdwWmjIpR8LTVxxuXJzPlZh9iKX+yImGVcKUYqAbW1iOSXm/x9zvTBUO7GShDlyNI/Q9jWAVaSwmfHwoi9Qd6asudWjJ6GIlUpzqLHJPsOEKZUErLMguaTaJsFfX9HsvALXTQEPiT23dH52C2/ZIcuZbg/Cu1v7mxRHZ8yBBeY=
+    secure: Pkuifrngsgs8hdFy9cbcj1SB0dXhAhrujgGC5+WHUwkqBtDiNpeUraQLAOf6zpjUzXG64Wl1QLDYX5ikyOVutj4r1YYeFg0JAgii08OV/TDPRE5AAWls6gyXTRiwBdgqnjV1VHgXsgxMi2YrbvsZlPu/5+kMvNOImSp8xyTKMgnR60Ir6LA7D7E/8uMaFZYv2SVavRnyYR9OgmMwS50ipwvEE6kXghb+d+AS9nBrQyh0VgkOA+FJTIip59X2LrC/lcNkCPRoY8wOzW+JICTa1PHG6TVLJy7GQLMji44E+sKNE2jh1PoG8c64NHa3eVtL92kTdhiDtAwZr3B8SmTwNfLu7DdjLmGgXdeNafyWqr/ArNdJcnio9K73sd8HoM2XOpyYHqoS5Pv6eYQ+FdpVbnxOS1Dxv2e+S8oBu+sgivtT6km9qpye/ShttgSadC+h/YJKVSfiJRLl2QzZF/0DfGtSt5TIMATJEYqrgRlKHpC3OxdG1/jg3WUWQrVieCHGGabBdEibKcuf9vqAy9MzcZ4ZCcbQDdS6XKPFHa7k/vMB34ds3VaWtnx4/x2TSnxVfURvAqclu3lxNsnxuOvabHdcGE7bb9uHVw4E0YPwMlHmckNydRbNdpYBlb6aSvv6FW1aQDSEmF83x8GRIrDeD6w7xTabbrTxzcO7PlSHBCY=
   on:
     tags: true
     repo: jooh/bindit
     python: 3.6
-services:
-  docker
-before_install:
-  docker pull nginx:latest
+services: docker
+before_install: docker pull alpine:latest
