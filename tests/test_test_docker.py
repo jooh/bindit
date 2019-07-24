@@ -5,7 +5,7 @@ import time
 import pathlib
 import tempfile
 import bindit.docker
-import test_docker
+from test_docker import DockerRun
 
 TEMPFILE_PREFIX = f"bindit_{__name__}_"
 
@@ -22,7 +22,7 @@ def test_DockerRun_nothing():
         )
         destdir = pathlib.PosixPath("/bindit/test/")
         destfile = destdir / sourcefile.name
-        with test_docker.DockerRun() as container:
+        with DockerRun() as container:
             # give the container process a bit of time to close
             # (sometimes you can get a docker exec in on a badly formed container before
             # the process returns and the container winds down)
@@ -41,7 +41,7 @@ def test_DockerRun_bind():
         destfile = destdir / sourcefile.name
         # so now we map sourcedir:destdir and check that the destfile exists inside
         # container.
-        with test_docker.DockerRun(
+        with DockerRun(
             runner_arg = list(bindit.docker.volume_bind_args(sourcedir, destdir))
         ) as container:
             mounts = container.get_mounts()
