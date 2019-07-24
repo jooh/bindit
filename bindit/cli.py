@@ -5,7 +5,7 @@ import click
 import bindit
 import bindit.docker
 
-"""Top-level command line interface for bindit."""
+"""Main command line interface for bindit."""
 
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.argument("singularity_args", nargs=-1, type=click.UNPROCESSED)
@@ -14,7 +14,8 @@ def singularity(singularity_args):
     pass
 
 
-@click.option("-l", "--loglevel", default="INFO", help="Logging level")
+@click.option("-l", "--loglevel", default="INFO", help="Logging level",
+        show_default=True)
 @click.option(
     "-d",
     "--dryrun",
@@ -33,9 +34,11 @@ def singularity(singularity_args):
 @click.group()
 def main(loglevel, dryrun, absonly, ignorepath):
     """bindit is a wrapper for container runners that makes it easy to handle file input
-    and output for containerised command-line applications. It works by detecting file
+    and output for containerized command-line applications. It works by detecting file
     paths in the container image arguments, and rebasing these as necessary onto new
-    bind mounts."""
+    bind mounts.
+    """
+
     bindit.LOGGER.setLevel(loglevel)
     bindit.DRY_RUN = dryrun
     bindit.ABS_ONLY = absonly
