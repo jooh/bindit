@@ -33,7 +33,8 @@ Under the hood, bindit re-maps the paths and passes this command to docker:
       /bindit/drive/data/input /bindit/drive/results/
 
 This is convenient for interactive use, and makes it trivial to generate shell script
-wrappers that handle disk IO for container applications.
+wrappers that handle disk IO for container applications. For this purpose, we supply a
+utility script generator: bindit_partial.
 
 .. toctree::
    :maxdepth: 2
