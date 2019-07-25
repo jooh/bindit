@@ -19,7 +19,9 @@ Takes the drudgery out of binding volumes on Docker and (soon) Singularity
 bindit is a wrapper for container runners that makes it easy to handle file input and
 output for containerised command-line applications. It works by detecting file paths in
 the container image arguments, and rebasing these as necessary onto new bind mounts. See
-docs for full detail, but here is the high-level API:
+`docs`_ for full detail, but here is the high-level API:
+
+.. _docs: https://bindit.readthedocs.io
 
 .. code-block:: console
    
@@ -40,8 +42,8 @@ docs for full detail, but here is the high-level API:
      -l, --loglevel TEXT    Logging level  [default: INFO]
      --help                 Show this message and exit.
 
-There is also a script generator utility for making wrapper scripts to turn containers
-into command-line interfaces with file IO support:
+   Commands:
+     docker
 
 .. code-block:: console
 
@@ -60,7 +62,8 @@ into command-line interfaces with file IO support:
      --shebang TEXT         Shell interpreter directive  [default: #!/bin/bash]
      --vararg_pattern TEXT  vararg pattern (try "$argv" for csh/tcsh)  [default:
                             "$@"]
-     --help                 Show this message and exit.
+     --help                 Show this message and exit.   Usage: bindit_partial [OPTIONS] SCRIPT_ARG...
 
 * Free software: MIT license
-* Documentation: https://bindit.readthedocs.io.
+* Documentation: https://bindit.readthedocs.io
+* Pull requests are welcome!

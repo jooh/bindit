@@ -17,7 +17,7 @@ Stable python package
 If you prefer to install bindit as a python package, you can install the current release
 with `pip`_:
 
-.. code-block:: console
+.. code-block:: bash
 
     pip install bindit
 
@@ -28,7 +28,7 @@ Development version
 
 The bleeding edge version of bindit can be pip installed from the `Github repo`_ like so:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install git+git://github.com/jooh/bindit.git
 
@@ -39,7 +39,7 @@ Editable version
 For contributors, you can install an editable version of bindit by first cloning the
 repository, then pip installing:
 
-.. code-block:: console
+.. code-block:: bash
 
     git clone git://github.com/jooh/bindit
     cd bindit

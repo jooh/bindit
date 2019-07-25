@@ -94,10 +94,9 @@ def parse_container_args(
             combinations of letters (e.g., docker run -it)
 
     Returns:
-        list: detected args to the container runner (DOES NOT include any new binds at
-            this stage)
-        dict: defines user-provided bind mounts (manual_binds[source] = dest).
-        str: detected container image
+        tuple: (list: detected args to the container runner (DOES NOT include any new
+            binds at this stage), dict: defines user-provided bind mounts
+            (manual_binds[source] = dest), str: detected container image)
 
     """
     container_args = []
@@ -182,12 +181,12 @@ def parse_image_args(args_iter, manual_binds):
         args_iter (iterator): arg_pairs iterator of arguments (generally the same you
             would use in parse_container_args to make sure you're in the right place)
         manual_binds (dict): defines user-provided bind mounts
-            (manual_binds[source] = dest).
+            (manual_binds[source] = dest)
 
     Returns:
-        list: args to the image (DOES include rebasing of any args that are deemed file
-            paths according to new_binds)
-        dict: defines new bind mounts (new_binds[source] = dest).
+        tuple: (list: args to the image (DOES include rebasing of any args that are
+            deemed file paths according to new_binds), dict: defines new bind mounts
+            (new_binds[source] = dest))
 
     """
     image_args = []

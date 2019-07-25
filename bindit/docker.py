@@ -63,6 +63,9 @@ def mount_bind_args(source, dest):
 
 
 def parse_bind_mount(bind_arg):
+    """unpack bind-mount bind_arg (e.g., src=/foo,dst=/bar) to dict where the key is a
+    resolve pathlib.Path and the value is an unresolved (in-container)
+    pathlib.PosixPath."""
     mount_dict = dict([kv.split("=") for kv in bind_arg.split(",")])
     source_key = next(k for k in mount_dict if k in ["source", "src"])
     dest_key = next(k for k in mount_dict if k in ["destination", "dst", "target"])
@@ -74,6 +77,9 @@ def parse_bind_mount(bind_arg):
 
 
 def parse_bind_volume(bind_arg):
+    """unpack volume bind bind_arg (e.g., /foo:/bar) to dict where the key is a
+    resolve pathlib.Path and the value is an unresolved (in-container)
+    pathlib.PosixPath."""
     # can be up to three, but we only want the first two
     bind_arg = bind_arg.split(":")
     src, dst = bind_arg[:2]
