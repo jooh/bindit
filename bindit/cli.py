@@ -7,6 +7,7 @@ import bindit.docker
 
 """Main command line interface for bindit."""
 
+
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.argument("singularity_args", nargs=-1, type=click.UNPROCESSED)
 def singularity(singularity_args):
@@ -14,8 +15,9 @@ def singularity(singularity_args):
     pass
 
 
-@click.option("-l", "--loglevel", default="INFO", help="Logging level",
-        show_default=True)
+@click.option(
+    "-l", "--loglevel", default="INFO", help="Logging level", show_default=True
+)
 @click.option(
     "-d",
     "--dryrun",
@@ -52,6 +54,6 @@ main.add_command(singularity)
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover
 
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     # detect pyinstaller frozen app
     main(*sys.argv[1:])

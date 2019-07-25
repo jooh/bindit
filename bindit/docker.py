@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import pathlib
-import itertools
-import shlex
 import click
 import bindit
 import bindit.shell
@@ -30,7 +28,7 @@ def infer_docker_cli():
             indend = thisrow[indstart:].index(" ") + indstart
             newflag = thisrow[indstart:indend]
             # empty if it's a boolean flag, type if it's a key-value pair
-            value = thisrow[indend + 1 :].split("  ")[0]
+            value = thisrow[indend + 1:].split("  ")[0]
             bindit.LOGGER.debug(f"new flag {newflag} {value}")
             valid_args[newflag] = value
             # there might also be a short-hand version, which is always single-hyphen,

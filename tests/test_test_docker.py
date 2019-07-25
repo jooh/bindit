@@ -14,6 +14,7 @@ def test_docker_daemon():
     """test that docker daemon is operational."""
     ret = bindit.shell.run("docker", "container", "ls")
 
+
 def test_DockerRun_nothing():
     """test DockerRun default behaviour."""
     with tempfile.TemporaryDirectory(prefix=TEMPFILE_PREFIX) as sourcedir:
@@ -29,6 +30,7 @@ def test_DockerRun_nothing():
             time.sleep(2)
             assert container.is_running()
 
+
 def test_DockerRun_bind():
     """test standard bind mapping with DockerRun. If this test fails with exit code 125
     (mounts denied), you may need to add the system-specific temp directory to the
@@ -42,7 +44,7 @@ def test_DockerRun_bind():
         # so now we map sourcedir:destdir and check that the destfile exists inside
         # container.
         with DockerRun(
-            runner_arg = list(bindit.docker.volume_bind_args(sourcedir, destdir))
+            runner_arg=list(bindit.docker.volume_bind_args(sourcedir, destdir))
         ) as container:
             mounts = container.get_mounts()
             # check that mount points are as specified

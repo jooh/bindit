@@ -188,9 +188,7 @@ def manual_bind_runner(binder):
         # expected location
         destfile = manualdest / sourcefile.name
         with DockerRun(
-            "ls",
-            sourcefile,
-            runner_arg=list(binder(sourcedir, manualdest)),
+            "ls", sourcefile, runner_arg=list(binder(sourcedir, manualdest))
         ) as container:
             assert container.is_running()
             mounts = container.get_mounts()
@@ -201,6 +199,7 @@ def manual_bind_runner(binder):
             assert mounts[sourcedir_resolved] == manualdest
             # and that we have no other mounts
             assert list(mounts.keys()) == [sourcedir_resolved]
+
 
 def test_manual_bind_mount():
     """test handling of a user-defined bind (specified in mount syntax)."""

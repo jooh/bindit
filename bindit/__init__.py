@@ -157,7 +157,7 @@ def arg_to_file_paths(arg):
             ignore_ok = all(
                 [
                     not this_ignore == resolved_path
-                    and not this_ignore in resolved_path.parents
+                    and this_ignore not in resolved_path.parents
                     for this_ignore in IGNORE_PATH
                 ]
             )

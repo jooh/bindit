@@ -42,14 +42,14 @@ def main(output_file, shebang, vararg_pattern, script_arg):
     dry_index = None
     try:
         dry_index = script_arg.index("-d")
-        script_arg = (*script_arg[:dry_index], *script_arg[dry_index + 1 :])
+        script_arg = (*script_arg[:dry_index], *script_arg[dry_index + 1:])
     except ValueError:
         pass
     except:
         raise
     try:
         dry_index = script_arg.index("--dryrun")
-        script_arg = (*script_arg[:dry_index], *script_arg[dry_index + 1 :])
+        script_arg = (*script_arg[:dry_index], *script_arg[dry_index + 1:])
     except ValueError:
         pass
     except:
