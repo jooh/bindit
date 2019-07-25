@@ -9,7 +9,7 @@ import re
 
 __author__ = """Johan Carlin"""
 __email__ = "johan.carlin@gmail.com"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 logging.basicConfig(
     format="%(asctime)s %(filename)s %(funcName)s %(message)s",
