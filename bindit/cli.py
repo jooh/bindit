@@ -34,6 +34,7 @@ def singularity(singularity_args):
         linux binary locations (/usr/bin etc) are included on this list by default.",
 )
 @click.group()
+@click.version_option(message="%(version)s")
 def main(loglevel, dryrun, absonly, ignorepath):
     """bindit is a wrapper for container runners that makes it easy to handle file input
     and output for containerized command-line applications. It works by detecting file
