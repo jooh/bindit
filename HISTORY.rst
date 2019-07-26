@@ -1,6 +1,11 @@
 =======
 History
 =======
+0.2.2 (2019-07-26)
+------------------
+
+* Patch --version argument for standalone installs.
+
 0.2.1 (2019-07-26)
 ------------------
 
