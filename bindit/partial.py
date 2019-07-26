@@ -1,5 +1,6 @@
 import sys
 import click
+import bindit
 import bindit.shell
 
 """Auxiliary command line interface for creating containerized apps with bindit. This
@@ -26,7 +27,7 @@ tool draws its name from its inspiration, functools.partial in the standard libr
     help='vararg pattern (try "$argv" for csh/tcsh)',
 )
 @click.argument("script_arg", nargs=-1, required=True, type=click.UNPROCESSED)
-@click.version_option(message="%(version)s")
+@click.version_option(version=bindit.__version__, message="%(version)s")
 def main(output_file, shebang, vararg_pattern, script_arg):
     """bindit_partial constructs a shell script wrapper for bindit (or your container
     runner directly) that can be used as a command line interface for the container. It
