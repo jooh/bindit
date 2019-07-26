@@ -1,0 +1,26 @@
+#!/bin/bash -e
+# build standalone bindit and bindit_partial with pyinstaller. Requires conda.
+# conda config (conda activate is a function and isn't available inside scripts)
+CONDA_BASE=$(conda info --base)
+source "$CONDA_BASE"/etc/profile.d/conda.sh
+conda activate base
+conda env remove --name binditbuild
+yes | conda create --name binditbuild python=3.7 pip
+conda activate binditbuild
+pip install pyinstaller
+pip install -e ./
+mkdir -p dist/standalone
+rm -f dist/standalone/*
+pyinstaller --onefile --name bindit_partial --distpath dist/standalone/ bindit/partial.py
+pyinstaller --onefile --name bindit --distpath dist/standalone/ bindit/cli.py
+BINDIT_VERSION=$(bindit --version)
+# this tends to be sensible on linux, but "darwin" is baffling to novice users...
+BUILD_OS="$OSTYPE"
+if [[ "$BUILD_OS" == "darwin"* ]]; then
+        # Mac OSX
+        BUILD_OS="mac_os_x"
+fi
+tar -czvf dist/bindit_"$BINDIT_VERSION"_"$BUILD_OS".tar.gz dist/standalone
+conda activate base
+conda env remove --name binditbuild
+echo "FINISHED"
