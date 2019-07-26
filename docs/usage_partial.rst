@@ -48,7 +48,7 @@ Now we make the CLI executable and call it:
    $ chmod u+x freesurfer_wrap
    $ ./freesurfer_wrap recon-all -subjid sub -all -expert /path/to/other/file
 
-The output of this short command is very similar ro the docker command  we started with,
+The output of this short command is very similar to the docker command  we started with,
 (to actually execute this example instead, you'd want to remove the ``--dryrun`` flag
 above):
 
