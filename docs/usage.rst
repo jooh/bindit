@@ -56,6 +56,11 @@ Return a formatted shell command without invoking container runner. Useful for
 debugging, and when you want to defer running the container to a different context (for
 instance, HPC job submission).
 
+Note that bindit *does* require the container runner on path to parse container runner
+arguments correctly, so for instance, it's not good practice to dryrun docker jobs on a
+machine that does not have docker available (or indeed a different docker version from
+what you use in production).
+
 -i, --ignorepath
 ~~~~~~~~~~~~~~~~
 
