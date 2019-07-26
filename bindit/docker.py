@@ -14,7 +14,15 @@ def infer_docker_cli():
     docker API is that multiple letters can be combined under a single hyphen, e.g.
     -it, but only if these are short-hand versions of boolean flags, so e.g. -v can't be
     used in this way). Provides inputs for bindit.parse_container_args."""
-    ret = bindit.shell.run("docker", "run", "--help")
+    try:
+        ret = bindit.shell.run("docker", "run", "--help")
+    except FileNotFoundError:
+        bindit.LOGGER.warning(
+            "WARNING: docker not on path, functionality will be limited."
+        )
+        return {}, set()
+    except:
+        raise
     rows = ret.stdout.split("\n")
     valid_args = {}
     # these can be arbitrarily combined (e.g. -it) so need to be parsed separately
