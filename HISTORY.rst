@@ -1,6 +1,12 @@
 =======
 History
 =======
+0.2.1 (2019-07-26)
+------------------
+
+* Handle missing docker binary more gracefully to support e.g. dryrun mode on machines
+  without docker installed (and eventually, singularity).
+
 0.2.0 (2019-07-25)
 ------------------
 
