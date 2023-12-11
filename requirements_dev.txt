@@ -11,4 +11,4 @@ pytest==4.3.1
 pytest-runner==2.11.1
 pytest-repeat==0.8.0
 sphinxcontrib-fulltoc==1.2.0
-pyinstaller==3.6
+pyinstaller==5.13.1
