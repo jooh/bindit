@@ -1,5 +1,5 @@
 ======
-bindit
+ARCHIVED - bindit
 ======
 
 
@@ -12,6 +12,9 @@ bindit
 .. image:: https://readthedocs.org/projects/bindit/badge/?version=latest
         :target: https://bindit.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+
+*Archived - learned a lot about end to end testing with docker in this project,
+but the basic abstraction it proposes is too leaky to be useful*
 
 
 Takes the drudgery out of binding volumes on Docker and (soon) Singularity
